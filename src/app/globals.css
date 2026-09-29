@@ -1,26 +1,141 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Telugu Meme Template Library — design tokens.
+  Palette is fixed from PRD §9: the product is dark-only by design, so there is no
+  light theme to switch to. shadcn's semantic tokens are mapped onto that palette
+  rather than kept alongside it, so every primitive inherits the look for free.
+*/
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* PRD §9 palette, addressable directly: bg-surface, text-brand, border-hairline */
+  --color-surface: var(--surface);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-hairline: var(--hairline);
+
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-sans);
+
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  color-scheme: dark;
+
+  --background: #000000;      /* PRD §9 primary background */
+  --surface: #141414;         /* PRD §9 secondary surfaces */
+  --brand: #e50914;           /* PRD §9 primary brand red */
+  --brand-hover: #f6121d;
+  --foreground: #ffffff;
+  --hairline: rgba(255, 255, 255, 0.12);
+
+  --card: #181818;            /* PRD §9 card background */
+  --card-foreground: #ffffff;
+  --popover: #141414;
+  --popover-foreground: #ffffff;
+
+  --primary: #e50914;
+  --primary-foreground: #ffffff;
+  --secondary: rgba(255, 255, 255, 0.14);
+  --secondary-foreground: #ffffff;
+
+  --muted: #181818;
+  --muted-foreground: #b3b3b3; /* PRD §9 secondary text */
+  --accent: #232323;
+  --accent-foreground: #ffffff;
+  --destructive: #e50914;
+
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.18);
+  --ring: #e50914;
+
+  /* Netflix-style cards are near-square-cornered; large radii read as SaaS. */
+  --radius: 0.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    @apply font-sans;
+    background: var(--background);
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  /* Display type: tight tracking so large headings read cinematic, not corporate. */
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: var(--brand);
+    color: #fff;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  /* Horizontal rails scroll but must not show a scrollbar (PRD §34). */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Shared page gutter so rails, hero and grids align on one vertical edge. */
+  .gutter {
+    @apply px-4 sm:px-6 lg:px-12;
+  }
+
+  /* Rails bleed to the right edge but keep the left gutter. */
+  .gutter-l {
+    @apply pl-4 sm:pl-6 lg:pl-12;
+  }
+}
+
+/* PRD §35 asks for subtle, fast motion — honour the OS opt-out. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

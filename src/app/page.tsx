@@ -1,69 +1,80 @@
-import Image from "next/image";
+import { Hero } from "@/components/hero/hero";
+import { Rail } from "@/components/rails/rail";
+import { TemplateCard } from "@/components/cards/template-card";
+import { MovieCard } from "@/components/cards/movie-card";
+import { ActorCard } from "@/components/cards/actor-card";
+import { EmotionCard } from "@/components/cards/emotion-card";
+import { DialogueCard } from "@/components/cards/dialogue-card";
+import {
+  getHeroTemplate,
+  getLatestTemplates,
+  getPopularActors,
+  getPopularDialogues,
+  getPopularEmotions,
+  getPopularMovies,
+  getTemplatesByEmotion,
+  getTrendingTemplates,
+} from "@/lib/queries";
 
-export default function Home() {
+/** Homepage (PRD §12, §33): hero, then horizontal rails all the way down. */
+export default function HomePage() {
+  const hero = getHeroTemplate();
+  const trending = getTrendingTemplates(18);
+  const movies = getPopularMovies(14);
+  const actors = getPopularActors(14);
+  const emotions = getPopularEmotions(15);
+  const angry = getTemplatesByEmotion("angry", 18);
+  const latest = getLatestTemplates(18);
+  const dialogues = getPopularDialogues(14);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+    <>
+      <Hero template={hero} />
+
+      {/* Rails overlap the hero's lower gradient slightly, as streaming UIs do. */}
+      <div className="relative z-10 -mt-10 pb-8 sm:-mt-16">
+        <Rail title="Trending Templates" variant="still">
+          {trending.map((t) => (
+            <TemplateCard key={t.id} template={t} />
+          ))}
+        </Rail>
+
+        <Rail title="Popular Movies" href="/movies" variant="poster">
+          {movies.map((m) => (
+            <MovieCard key={m.id} movie={m} />
+          ))}
+        </Rail>
+
+        <Rail title="Popular Actors" href="/actors" variant="portrait">
+          {actors.map((a) => (
+            <ActorCard key={a.id} actor={a} />
+          ))}
+        </Rail>
+
+        <Rail title="Browse by Emotion" href="/emotions" variant="emotion">
+          {emotions.map((e) => (
+            <EmotionCard key={e.id} emotion={e} />
+          ))}
+        </Rail>
+
+        <Rail title="Angry Templates" href="/emotions/angry" variant="still">
+          {angry.map((t) => (
+            <TemplateCard key={t.id} template={t} />
+          ))}
+        </Rail>
+
+        <Rail title="Popular Dialogues" href="/dialogues" variant="dialogue">
+          {dialogues.map((d) => (
+            <DialogueCard key={d.slug} dialogue={d} />
+          ))}
+        </Rail>
+
+        <Rail title="Latest Templates" variant="still">
+          {latest.map((t) => (
+            <TemplateCard key={t.id} template={t} />
+          ))}
+        </Rail>
+      </div>
+    </>
   );
 }
